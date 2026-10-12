@@ -120,11 +120,28 @@ class DownloadMagento extends AbstractSubCommand
 
     protected function composerInstall(): void
     {
-        $process = new Process(array_merge($this->config['composer_bin'], ['install']));
-        $process->setTimeout(86400);
+        $process = $this->createComposerInstallProcess();
         $process->start();
-        $process->wait(function ($type, $buffer): void {
+
+        $code = $process->wait(function ($type, $buffer): void {
             $this->output->write('composer > ' . $buffer, false);
         });
+
+        if (Exec::CODE_CLEAN_EXIT !== $code) {
+            throw new RuntimeException(
+                'Non-zero exit code for composer install command: ' . $process->getCommandLine(),
+            );
+        }
+    }
+
+    /**
+     * Dev packages are not needed to run a shop, and their locked commits may no longer be downloadable
+     */
+    protected function createComposerInstallProcess(): Process
+    {
+        $process = new Process(array_merge($this->config['composer_bin'], ['install', '--no-dev']));
+        $process->setTimeout(86400);
+
+        return $process;
     }
 }

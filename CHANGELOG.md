@@ -19,7 +19,8 @@ First release of the m-michalis fork (https://github.com/m-michalis/n98-magerun)
 - Fix: Module autoloaders were ignored by the classmap-authoritative phar autoloader (#1653, upstream)
 - Fix: checkVarDir warnings (#1643 and OpenMage/om-magerun#1, upstream)
 - Fix: `self-update --dry-run` left the downloaded temp file behind, and a corrupted download exited with code 0
-- Del: CI for Magento 1.9.4.5 and OpenMage 20.0/20.1 (PHP 7.4/8.1)
+- Fix: `install` ran `composer install` with dev packages (failed for OpenMage 20.10, whose locked openmage/dev-copyright commit is gone) and ignored its exit code
+- Del: CI for Magento 1.9.4.5 and OpenMage 20.0/20.1 (PHP 7.4/8.1), and for MySQL 5.7
 - Del: Deployment to files.magerun.net and the n98-magerun1-dist repository
 
 3.0.1

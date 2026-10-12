@@ -3,9 +3,9 @@
     "description": "Tools for managing Magento projects and installations",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/netz98/n98-magerun/issues"
+        "issues": "https://github.com/m-michalis/n98-magerun/issues"
     },
-    "homepage": "https://netz98.github.com/n98-magerun/",
+    "homepage": "https://github.com/m-michalis/n98-magerun",
     "keywords": [
         "magento",
         "installer",
@@ -13,7 +13,7 @@
         "magerun"
     ],
     "require": {
-        "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+        "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
         "ext-dom": "*",
         "ext-json": "*",
         "ext-libxml": "*",
@@ -25,14 +25,13 @@
         "nesbot/carbon": "^2.73",
         "psy/psysh": "~0.4",
         "rmccue/requests": "^2.0.11",
-        "symfony/console": "^5.4 || ^6.4",
-        "symfony/event-dispatcher": "^5.4 || ^6.4",
-        "symfony/finder": "^5.4 || ^6.4",
-        "symfony/polyfill-php80": "^1.30",
-        "symfony/process": "^5.4 || ^6.4",
-        "symfony/validator": "^5.4 || ^6.4",
-        "symfony/yaml": "^5.4 || ^6.4",
-        "twig/twig": "^3.7.1"
+        "symfony/console": "^5.4",
+        "symfony/event-dispatcher": "^5.4",
+        "symfony/finder": "^5.4",
+        "symfony/process": "^5.4",
+        "symfony/validator": "^5.4",
+        "symfony/yaml": "^5.4",
+        "twig/twig": "^3.26"
     },
     "require-dev": {
         "bamarni/symfony-console-autocomplete": "^1.2.0",
@@ -76,7 +75,7 @@
     ],
     "config": {
         "platform": {
-            "php": "7.4.0"
+            "php": "8.2.0"
         },
         "sort-packages": true
     },

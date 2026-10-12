@@ -343,7 +343,7 @@ class DbSettings implements ArrayAccess, IteratorAggregate
     /**
      * @return mixed Can return all value types.
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         if (isset($this->config[$offset])) {
             return $this->config[$offset];

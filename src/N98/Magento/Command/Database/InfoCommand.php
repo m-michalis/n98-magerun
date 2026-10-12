@@ -52,8 +52,6 @@ HELP;
 
         // note: there is no need to specify the default port neither for PDO, nor JDBC nor CLI.
         $portOrDefault = $this->dbSettings['port'] ?? 3306;
-
-        $pdoConnectionString = '';
         if ($isSocketConnect) {
             $pdoConnectionString = sprintf(
                 'mysql:unix_socket=%s;dbname=%s',
@@ -70,8 +68,6 @@ HELP;
         }
 
         $settings['PDO-Connection-String'] = $pdoConnectionString;
-
-        $jdbcConnectionString = '';
         if ($isSocketConnect) {
             // isn't supported according to this post: http://stackoverflow.com/a/18493673/145829
             $jdbcConnectionString = "Connecting using JDBC through a unix socket isn't supported!";

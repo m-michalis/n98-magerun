@@ -17,7 +17,7 @@ namespace N98\Magento\Command\Installer;
  */
 class InstallCommandTester extends InstallCommand
 {
-    public const COMMAND_CLASS = 'N98\Magento\Command\Installer\InstallCommand';
+    public const COMMAND_CLASS = \N98\Magento\Command\Installer\InstallCommand::class;
 
     /**
      * @return array

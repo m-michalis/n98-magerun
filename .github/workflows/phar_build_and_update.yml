@@ -1,8 +1,11 @@
-name: Phar build and update test
+name: Phar build test
 
 on:
   workflow_call:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -14,7 +17,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           tools: composer:2
-          php-version: '7.4'
+          php-version: '8.2'
 
       - name: Checkout PR
         uses: actions/checkout@v5
@@ -24,18 +27,14 @@ jobs:
 
       - name: Checkout HEAD
         uses: actions/checkout@v5
-        if: github.event_name == 'push'
-
-      - name: Check Security
-        uses: symfonycorp/security-checker-action@v5
+        if: github.event_name != 'pull_request'
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
       - name: Get Composer Cache Directory
         id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v5
         with:
@@ -45,11 +44,13 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
+
+      - name: Check dependencies for security advisories
+        run: composer audit --locked --no-dev
 
       - name: Create phar
         run: bash ./build.sh
 
-      - name: Test self-update command
-        run: php ./n98-magerun.phar self-update --unstable
+      - name: Run phar
+        run: php ./n98-magerun.phar list

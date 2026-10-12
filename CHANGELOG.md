@@ -1,6 +1,27 @@
 RECENT CHANGES
 ==============
 
+3.1.0
+-----
+
+First release of the m-michalis fork (https://github.com/m-michalis/n98-magerun).
+
+- Break: Require PHP 8.2 or newer (needed for the Twig security fixes)
+- Break: `self-update --unstable` is no longer available, no development builds are published
+- Add: OpenMage 20.16.0, 20.17.0 and 20.18.0 in the installer
+- Add: Release workflow publishing the phar, its SHA256 checksum, version.txt and CHANGELOG.md as GitHub release assets
+- Imp: `self-update` uses the GitHub releases of this fork and verifies the SHA256 checksum before replacing the phar
+- Imp: Update 3rd party dependencies (twig 3.30, psysh 0.12.24, requests 2.0.20, symfony 5.4) to fix known security advisories
+- Imp: Build the phar with Box 4.7.0, pinned by checksum
+- Imp: `--version` shows "(m-michalis fork)"
+- Fix: Phar did not work with OpenMage 20, which unregisters the phar:// stream wrapper in app/bootstrap.php
+- Fix: Phar used the autoloader of the current working directory instead of its own (#1641, upstream)
+- Fix: Module autoloaders were ignored by the classmap-authoritative phar autoloader (#1653, upstream)
+- Fix: checkVarDir warnings (#1643 and OpenMage/om-magerun#1, upstream)
+- Fix: `self-update --dry-run` left the downloaded temp file behind, and a corrupted download exited with code 0
+- Del: CI for Magento 1.9.4.5 and OpenMage 20.0/20.1 (PHP 7.4/8.1)
+- Del: Deployment to files.magerun.net and the n98-magerun1-dist repository
+
 3.0.1
 -----
 

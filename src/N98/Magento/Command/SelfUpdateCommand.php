@@ -6,6 +6,7 @@ namespace N98\Magento\Command;
 
 use Exception;
 use N98\Util\Markdown\VersionFilePrinter;
+use N98\Util\Sha256File;
 use Phar;
 use PharException;
 use RuntimeException;
@@ -29,33 +30,32 @@ use WpOrg\Requests\Requests;
  */
 class SelfUpdateCommand extends AbstractMagentoCommand
 {
-    public const VERSION_TXT_URL_UNSTABLE = 'https://raw.githubusercontent.com/netz98/n98-magerun/develop/version.txt';
+    public const RELEASE_DOWNLOAD_URL = 'https://github.com/m-michalis/n98-magerun/releases/latest/download/';
 
-    public const MAGERUN_DOWNLOAD_URL_UNSTABLE = 'https://files.magerun.net/n98-magerun-dev.phar';
+    public const VERSION_TXT_URL_STABLE = self::RELEASE_DOWNLOAD_URL . 'version.txt';
 
-    public const VERSION_TXT_URL_STABLE = 'https://raw.githubusercontent.com/netz98/n98-magerun/master/version.txt';
+    public const MAGERUN_DOWNLOAD_URL_STABLE = self::RELEASE_DOWNLOAD_URL . 'n98-magerun.phar';
 
-    public const MAGERUN_DOWNLOAD_URL_STABLE = 'https://files.magerun.net/n98-magerun.phar';
+    public const CHECKSUM_DOWNLOAD_URL_STABLE = self::RELEASE_DOWNLOAD_URL . 'n98-magerun.phar.sha256';
 
-    public const CHANGELOG_DOWNLOAD_URL_UNSTABLE = 'https://raw.github.com/netz98/n98-magerun/develop/CHANGELOG.md';
-
-    public const CHANGELOG_DOWNLOAD_URL_STABLE = 'https://raw.github.com/netz98/n98-magerun/master/CHANGELOG.md';
+    public const CHANGELOG_DOWNLOAD_URL_STABLE = self::RELEASE_DOWNLOAD_URL . 'CHANGELOG.md';
 
     protected function configure(): void
     {
         $this
             ->setName('self-update')
             ->setAliases(['selfupdate'])
-            ->addOption('unstable', null, InputOption::VALUE_NONE, 'Load unstable version from develop branch')
+            ->addOption('unstable', null, InputOption::VALUE_NONE, 'Not supported: unstable builds are not published')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Tests if there is a new version without any update.')
-            ->setDescription('Updates n98-magerun2.phar to the latest version.');
+            ->setDescription('Updates n98-magerun.phar to the latest version.');
     }
 
     public function getHelp(): string
     {
         return <<<HELP
-The <info>self-update</info> command checks GitHub for newer
-versions of n98-magerun and if found, installs the latest.
+The <info>self-update</info> command checks the GitHub releases of
+m-michalis/n98-magerun for a newer version and if found, installs it
+after verifying its sha256 checksum.
 
 <info>php n98-magerun.phar self-update</info>
 
@@ -67,6 +67,10 @@ HELP;
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if ($input->getOption('unstable')) {
+            throw new RuntimeException('Unstable builds are not published. Use a release from ' . self::RELEASE_DOWNLOAD_URL);
+        }
+
         $isDryRun = $input->getOption('dry-run');
 
         if (!$this->getApplication()->isPharMode()) {
@@ -81,50 +85,32 @@ HELP;
         // check for permissions in local filesystem before start connection process
         if (!is_writable($tempDirectory = dirname($tempFilename))) {
             throw new RuntimeException(
-                'n98-magerun2 update failed: the "' . $tempDirectory .
+                'n98-magerun update failed: the "' . $tempDirectory .
                 '" directory used to download the temp file could not be written',
             );
         }
 
         if (!is_writable($localFilename)) {
             throw new RuntimeException(
-                'n98-magerun2 update failed: the "' . $localFilename . '" file could not be written',
+                'n98-magerun update failed: the "' . $localFilename . '" file could not be written',
             );
         }
 
-        $loadUnstable = $input->getOption('unstable');
-        if ($loadUnstable) {
-            $versionTxtUrl = self::VERSION_TXT_URL_UNSTABLE;
-            $remotePharDownloadUrl = self::MAGERUN_DOWNLOAD_URL_UNSTABLE;
-        } else {
-            $versionTxtUrl = self::VERSION_TXT_URL_STABLE;
-            $remotePharDownloadUrl = self::MAGERUN_DOWNLOAD_URL_STABLE;
-        }
+        $latestVersion = trim($this->download(self::VERSION_TXT_URL_STABLE, 'version'));
 
-        $response = Requests::get(
-            $versionTxtUrl,
-            [],
-            [
-                'verify' => true,
-            ],
-        );
-
-        if (!$response->success) {
-            throw new RuntimeException('Cannot get version: ' . $response->status_code);
-        }
-
-        $latestVersion = trim($response->body);
-
-        if ($this->isOutdatedVersion($latestVersion, $loadUnstable)) {
+        if ($this->isOutdatedVersion($latestVersion)) {
             $output->writeln(sprintf('Updating to version <info>%s</info>.', $latestVersion));
 
             try {
-                $this->downloadNewPhar($output, $remotePharDownloadUrl, $tempFilename);
+                $this->downloadNewPhar($output, self::MAGERUN_DOWNLOAD_URL_STABLE, $tempFilename);
+                Sha256File::verify($tempFilename, $this->download(self::CHECKSUM_DOWNLOAD_URL_STABLE, 'checksum'));
                 $this->checkNewPharFile($tempFilename);
 
-                $changelog = $this->getChangelog($loadUnstable);
+                $changelog = $this->getChangelog();
 
-                if (!$isDryRun) {
+                if ($isDryRun) {
+                    @unlink($tempFilename);
+                } else {
                     $this->replaceExistingPharFile($tempFilename, $localFilename);
                 }
 
@@ -132,7 +118,7 @@ HELP;
                 $output->writeln('');
                 $output->writeln($changelog);
                 $output->writeln('<info>---------------------------------</info>');
-                $output->writeln('<info>Successfully updated n98-magerun2</info>');
+                $output->writeln('<info>Successfully updated n98-magerun</info>');
                 $output->writeln('<info>---------------------------------</info>');
 
                 $this->_exit(0);
@@ -144,9 +130,11 @@ HELP;
 
                 $output->writeln('<error>The download is corrupted (' . $exception->getMessage() . ').</error>');
                 $output->writeln('<error>Please re-run the self-update command to try again.</error>');
+
+                return Command::FAILURE;
             }
         } else {
-            $output->writeln('<info>You are using the latest n98-magerun2 version.</info>');
+            $output->writeln('<info>You are using the latest n98-magerun version.</info>');
         }
 
         return Command::SUCCESS;
@@ -220,7 +208,7 @@ HELP;
         file_put_contents($tempFilename, $response->body);
 
         if (!file_exists($tempFilename)) {
-            $output->writeln('<error>The download of the new n98-magerun2 version failed for an unexpected reason');
+            $output->writeln('<error>The download of the new n98-magerun version failed for an unexpected reason</error>');
         }
     }
 
@@ -244,58 +232,40 @@ HELP;
         }
     }
 
-    /**
-     * Download changelog
-     */
-    private function getChangelog(bool $loadUnstable): string
+    private function download(string $url, string $what): string
     {
-        $changelog = '';
-
-        $changeLogUrl = $loadUnstable ? self::CHANGELOG_DOWNLOAD_URL_UNSTABLE : self::CHANGELOG_DOWNLOAD_URL_STABLE;
-
         $response = Requests::get(
-            $changeLogUrl,
+            $url,
             [],
             [
                 'verify' => true,
-                'headers' => [
-                    'Accept-Encoding' => 'deflate, gzip, br, zstd',
-                ],
             ],
         );
 
         if (!$response->success) {
-            throw new RuntimeException('Cannot download changelog: ' . $response->status_code);
+            throw new RuntimeException(sprintf('Cannot download %s: %s', $what, $response->status_code));
         }
 
-        $changeLogContent = $response->body;
-        if ($changeLogContent) {
-            $versionFilePrinter = new VersionFilePrinter($changeLogContent);
-            $previousVersion = $this->getApplication()->getVersion();
-            $changelog .= $versionFilePrinter->printFromVersion($previousVersion) . "\n";
-        }
-
-        if ($loadUnstable) {
-            $unstableFooterMessage = <<<UNSTABLE_FOOTER
-<comment>
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!! DEVELOPMENT VERSION. DO NOT USE IN PRODUCTION !!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-</comment>
-UNSTABLE_FOOTER;
-
-            $changelog .= $unstableFooterMessage . "\n";
-        }
-
-        return $changelog;
+        return $response->body;
     }
 
-    private function isOutdatedVersion(string $latest, bool $loadUnstable): bool
+    /**
+     * Download changelog
+     */
+    private function getChangelog(): string
     {
-        if ($this->getApplication()->getVersion() !== $latest) {
-            return true;
+        $changeLogContent = $this->download(self::CHANGELOG_DOWNLOAD_URL_STABLE, 'changelog');
+        if (!$changeLogContent) {
+            return '';
         }
 
-        return $loadUnstable;
+        $versionFilePrinter = new VersionFilePrinter($changeLogContent);
+
+        return $versionFilePrinter->printFromVersion($this->getApplication()->getVersion()) . "\n";
+    }
+
+    private function isOutdatedVersion(string $latest): bool
+    {
+        return version_compare($latest, $this->getApplication()->getVersion(), '>');
     }
 }

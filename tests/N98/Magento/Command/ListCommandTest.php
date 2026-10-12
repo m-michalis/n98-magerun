@@ -17,6 +17,6 @@ final class ListCommandTest extends TestCase
             ['command' => 'list'],
         );
 
-        $this->assertStringContainsString(sprintf('n98-magerun %s by valantic CEC', $this->getApplication()->getVersion()), $commandTester->getDisplay());
+        $this->assertStringContainsString(sprintf('n98-magerun %s (m-michalis fork)', $this->getApplication()->getVersion()), $commandTester->getDisplay());
     }
 }

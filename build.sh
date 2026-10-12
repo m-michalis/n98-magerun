@@ -8,6 +8,8 @@ set -euo pipefail
 IFS=$'\n\t'
 PHP_BIN="php"
 BOX_BIN="./box.phar"
+BOX_VERSION="4.7.0"
+BOX_SHA256="3d390eeaec33288098fe83f8a54c60cc575cb6be295f38ff4482b4b4f26f8d52"
 PHAR_OUTPUT_FILE="./n98-magerun.phar"
 COMPOSER_BIN="composer"
 
@@ -49,10 +51,16 @@ function check_dependencies() {
 }
 
 function download_box() {
-  if [ ! -f box.phar ]; then
-    curl -L https://github.com/box-project/box/releases/download/3.16.0/box.phar -o $BOX_BIN
-    chmod +x ./box.phar
+  if [ ! -f $BOX_BIN ]; then
+    curl -fsSL "https://github.com/box-project/box/releases/download/${BOX_VERSION}/box.phar" -o $BOX_BIN
   fi
+
+  if ! echo "${BOX_SHA256}  ${BOX_BIN}" | sha256sum -c --status; then
+    echo "box.phar checksum mismatch (expected box ${BOX_VERSION}). Remove ${BOX_BIN} and retry."
+    exit 1
+  fi
+
+  chmod +x $BOX_BIN
 }
 
 function download_composer() {

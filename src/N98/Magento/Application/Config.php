@@ -31,7 +31,7 @@ class Config
 
     public const PSR_4 = 'PSR-4';
 
-    public const COMMAND_CLASS = 'Symfony\Component\Console\Command\Command';
+    public const COMMAND_CLASS = \Symfony\Component\Console\Command\Command::class;
 
     private array $config = [];
 
@@ -169,7 +169,6 @@ class Config
             );
         }
 
-        /** @var Command $command */
         $command = new $className();
         if (null !== $commandName) {
             $command->setName($commandName);

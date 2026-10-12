@@ -1,0 +1,82 @@
+name: Release
+
+# Publishes a GitHub release of this repository only. Nothing is uploaded anywhere else.
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: PHPUnit OpenMage 20.x
+    if: github.repository == 'm-michalis/n98-magerun'
+    uses: ./.github/workflows/test-openmage-latest.yml
+
+  release:
+    name: GitHub release
+    needs: [tests]
+    if: github.repository == 'm-michalis/n98-magerun'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          tools: composer:2
+          php-version: '8.2'
+
+      - name: Check tag matches version.txt, Application::APP_VERSION and CHANGELOG.md
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          test "$(tr -d '[:space:]' < version.txt)" = "$TAG" || { echo "version.txt does not match tag $TAG"; exit 1; }
+          grep -q "APP_VERSION = '$TAG';" src/N98/Magento/Application.php || { echo "Application::APP_VERSION does not match tag $TAG"; exit 1; }
+          grep -qx "$TAG" CHANGELOG.md || { echo "CHANGELOG.md has no section for $TAG"; exit 1; }
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Check dependencies for security advisories
+        run: composer audit --locked --no-dev
+
+      - name: Create phar
+        run: bash ./build.sh
+
+      - name: Check phar version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: php n98-magerun.phar --version --no-ansi | grep -F "n98-magerun $TAG (m-michalis fork)"
+
+      - name: Create checksum and release notes
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          sha256sum n98-magerun.phar > n98-magerun.phar.sha256
+          awk -v v="$TAG" '$0 == v { found = 1; getline; next } found && /^[0-9]+\.[0-9]+\.[0-9]+$/ { exit } found' CHANGELOG.md > release-notes.md
+          cat n98-magerun.phar.sha256 release-notes.md
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" \
+            --repo "${{ github.repository }}" \
+            --verify-tag \
+            --title "$TAG" \
+            --notes-file release-notes.md \
+            n98-magerun.phar \
+            n98-magerun.phar.sha256 \
+            version.txt \
+            CHANGELOG.md

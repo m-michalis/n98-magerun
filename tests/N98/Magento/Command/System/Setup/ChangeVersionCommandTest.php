@@ -15,8 +15,7 @@ final class ChangeVersionCommandTest extends TestCase
     {
         $this->markTestSkipped();
 
-        $command = $this->getMockBuilder(ChangeVersionCommand::class)
-            ->getMock();
+        $command = $this->createMock(ChangeVersionCommand::class);
 
         $resourceModel = $this->getMockBuilder(Mage_Core_Model_Resource_Resource::class)
             ->disableOriginalConstructor()
@@ -48,8 +47,7 @@ final class ChangeVersionCommandTest extends TestCase
     {
         $this->markTestSkipped();
 
-        $command = $this->getMockBuilder(ChangeVersionCommand::class)
-            ->getMock();
+        $command = $this->createMock(ChangeVersionCommand::class);
 
         $resourceModel = $this->getMockBuilder(Mage_Core_Model_Resource_Resource::class)
             ->disableOriginalConstructor()

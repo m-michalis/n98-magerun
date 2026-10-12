@@ -21,6 +21,9 @@ use BadMethodCallException;
  */
 final class AutoloadHandlerTest extends TestCase
 {
+    /**
+     * @var \Closure[]
+     */
     private array $cleanup = [];
 
     protected function tearDown(): void

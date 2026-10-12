@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         openmage_version: ["20.18.0"]
-        php_version: ["8.5", "8.1"]
+        php_version: ["8.5", "8.2"]
         mysql_version: ["8.0", "5.7"]
 
     services:
@@ -81,14 +81,21 @@ jobs:
         env:
           COMPOSER_VENDOR_PATH : "${{ github.workspace }}/magento/vendor"
 
-      - name: Report coverage
-        uses: codecov/codecov-action@v5
-        with:
-          file: ./build/coverage/clover.xml
-
       - name: Run functional tests
         run: bats tests/bats/functional.bats
         env:
           COMPOSER_VENDOR_PATH : "${{ github.workspace }}/magento/vendor"
           N98_MAGERUN_BIN: "${{ github.workspace }}/bin/n98-magerun"
+          N98_MAGERUN_TEST_MAGENTO_ROOT: "${{ github.workspace }}/magento"
+
+      - name: Build phar
+        run: bash ./build.sh
+
+      # Same suite against the phar, run outside the project so it cannot fall back to ./vendor
+      - name: Run functional tests against phar
+        working-directory: /tmp
+        run: bats "${{ github.workspace }}/tests/bats/functional.bats"
+        env:
+          COMPOSER_VENDOR_PATH : "${{ github.workspace }}/magento/vendor"
+          N98_MAGERUN_BIN: "${{ github.workspace }}/n98-magerun.phar"
           N98_MAGERUN_TEST_MAGENTO_ROOT: "${{ github.workspace }}/magento"

@@ -15,6 +15,9 @@ use Traversable;
  */
 class ResultCollection implements IteratorAggregate
 {
+    /**
+     * @var \N98\Magento\Command\System\Check\Result[]
+     */
     protected array $_results;
 
     protected string $_resultGroup;

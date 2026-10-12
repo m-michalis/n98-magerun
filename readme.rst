@@ -1,13 +1,14 @@
-======================================
-netz98 magerun CLI tools for Magento 1
-======================================
+====================================
+n98-magerun for OpenMage / Magento 1
+====================================
 
-Repository sunset
------------------
+Maintained fork
+---------------
 
-As of 2026-07-02, this repository is sunset. Magento 1 has been end-of-life for
-years, so this project is no longer maintained by valantic. The project may be
-forked and continued by the OpenMage team in the future.
+The original `netz98/n98-magerun <https://github.com/netz98/n98-magerun>`_ repository was sunset on 2026-07-02.
+I'm continuing this fork for my own work. Feel free to open an issue with any feedback, bug report or idea.
+
+Upstream changes from `OpenMage/om-magerun <https://github.com/OpenMage/om-magerun>`_ are merged when available.
 
 ----
 
@@ -15,75 +16,41 @@ forked and continued by the OpenMage team in the future.
 
 The n98 magerun cli tools provides some handy tools to work with Magento from command line.
 
-.. image:: https://badges.gitter.im/netz98/magerun.svg
-   :target: https://gitter.im/netz98/magerun
-
-
-Build Status
-------------
-
-+------------------------+-----------------------------------------------------------------------------------------------+
-| **Latest Release**     | .. image:: https://img.shields.io/maintenance/yes/2021.svg                                    |
-|                        | .. image:: https://travis-ci.org/netz98/n98-magerun.png?branch=master                         |
-|                        |    :target: https://travis-ci.org/netz98/n98-magerun                                          |
-|                        | .. image:: https://scrutinizer-ci.com/g/netz98/n98-magerun/badges/quality-score.png?b=master  |
-|                        |    :target: https://scrutinizer-ci.com/g/netz98/n98-magerun/                                  |
-|                        | .. image:: https://poser.pugx.org/n98/magerun/v/stable.png                                    |
-|                        |    :target: https://packagist.org/packages/n98/magerun                                        |
-+------------------------+-----------------------------------------------------------------------------------------------+
-| **Development Branch** | .. image:: https://travis-ci.org/netz98/n98-magerun.png?branch=develop                        |
-|                        |    :target: https://travis-ci.org/netz98/n98-magerun                                          |
-|                        | .. image:: https://circleci.com/gh/netz98/n98-magerun/tree/develop.svg?style=shield           |
-|                        |    :target: https://circleci.com/gh/netz98/n98-magerun/tree/develop                           |
-|                        | .. image:: https://scrutinizer-ci.com/g/netz98/n98-magerun/badges/quality-score.png?b=develop |
-|                        |    :target: https://scrutinizer-ci.com/g/netz98/n98-magerun/?branch=develop                   |
-|                        | .. image:: https://codecov.io/github/netz98/n98-magerun/coverage.svg?branch=develop           |
-|                        |    :target: https://codecov.io/github/netz98/n98-magerun?branch=develop                       |
-+------------------------+-----------------------------------------------------------------------------------------------+
-
 Development is done in **develop** branch.
 
-This software is only running with Magento 1.
+This software is only running with Magento 1 / OpenMage.
 
-If you use Magento 2 please use another stable version (https://github.com/netz98/n98-magerun2).
+If you use Magento 2 please use https://github.com/netz98/n98-magerun2.
 
 Compatibility
 -------------
-The tools will automatically be tested for multiple PHP versions. It's currently running in various Linux distributions and Mac OS X.
+Since version 3.1.0 PHP 8.2 or newer is required. Use 3.0.x for older PHP versions.
+
+Every change is tested against:
+
+- OpenMage LTS 20.10 with PHP 8.2 and 8.3
+- OpenMage LTS 20.18 with PHP 8.2 and 8.5
+
 Microsoft Windows is not fully supported (some Commands like `db:dump` or `install` are excluded).
-
-We test the tool agains this versions:
-
-- Magento 1.9.4.5 PHP 7.2
-- OpenMage LTS 20.0.3 PHP 7.3
 
 Installation
 ------------
 
-There are three ways to install the tools:
-
 Download and Install Phar File
 """"""""""""""""""""""""""""""
 
-Download the latest stable N98-Magerun phar-file from the file-server_:
+Download the latest release and its checksum from GitHub_:
 
 .. code-block:: sh
 
-   wget https://files.magerun.net/n98-magerun.phar
+   curl -fsSLO https://github.com/m-michalis/n98-magerun/releases/latest/download/n98-magerun.phar
+   curl -fsSLO https://github.com/m-michalis/n98-magerun/releases/latest/download/n98-magerun.phar.sha256
 
-or if you prefer to use Curl:
-
-.. code-block:: sh
-
-   curl -O https://files.magerun.net/n98-magerun.phar
-
-Verify the download by comparing the SHA256 checksum with the one on the website at https://files.magerun.net/:
+Verify the download:
 
 .. code-block:: sh
 
-    shasum -a256 n98-magerun.phar
-
-If it shows the same checksum as on the website, you downloaded the file successfully.
+    sha256sum -c n98-magerun.phar.sha256
 
 Now you can make the phar-file executable:
 
@@ -101,7 +68,7 @@ The command should execute successfully and show you the version number of N98-M
 
 .. code-block:: sh
 
-    n98-magerun version 2.3.0 by valantic CEC
+    n98-magerun 3.1.0 (m-michalis fork)
 
 You now have successfully installed Magerun! You can tailor the installation further like installing it system-wide and
 enable autocomplete - read on for more information about these and other features.
@@ -128,54 +95,22 @@ Just rename it to whatever you want. Or better: create an alias so that the orig
 be useful if you exchange scripts that are making use of magerun with other users as the canonical name is
 `n98-magerun.phar`, Some common aliases amongst the user-base are `magerun` or just `mr` even.
 
+.. _GitHub: https://github.com/m-michalis/n98-magerun/releases
 
-.. _file-server: https://files.magerun.net/
+**Composer / Homebrew:**
 
-Install with Composer
-"""""""""""""""""""""
-Require Magerun within the Magento (or any other) project and you can then
-execute it from the vendor’s bin folder:
-
-.. code-block:: sh
-
-    composer require n98/magerun
-    # ...
-    ./vendor/bin/n98-magerun --version
-    n98-magerun version 1.97.0 by netz98 new media GmbH
-
-Alternative source install:
-
-https://github.com/netz98/n98-magerun/wiki/Install-from-source-with-Composer
-
-Install with Homebrew
-"""""""""""""""""""""
-
-First you need to have homebrew installed: http://brew.sh/
-
-Install homebrew-php tap: https://github.com/Homebrew/homebrew-php#installation
-
-Once homebrew and the tap are installed, you can install the tools with it:
-
-.. code-block:: sh
-
-    brew install n98-magerun
-
-You can now use the tools:
-
-.. code-block:: sh
-
-    $ n98-magerun {command}
+This fork is not published on Packagist or Homebrew. `composer require n98/magerun` and `brew install n98-magerun`
+install the archived netz98 version.
 
 Update
 ------
 
-Since version 1.1.0 we deliver a self-update script within the phar file::
+The phar file can update itself to the latest GitHub release. The download is verified against the release's
+SHA256 checksum before the file is replaced::
 
    $ n98-magerun.phar self-update
 
 If file was installed system wide do not forget "sudo".
-
-See it in action: http://youtu.be/wMHpfKD9vjM
 
 Autocompletion
 --------------

@@ -28,8 +28,7 @@ final class RemoveCommandTest extends TestCase
             ->method('delete')
             ->willReturn(1);
 
-        $coreResource = $this->getMockBuilder(Mage_Core_Model_Resource::class)
-            ->getMock();
+        $coreResource = $this->createMock(Mage_Core_Model_Resource::class);
 
         $coreResource->expects($this->once())
             ->method('getConnection')
@@ -65,8 +64,7 @@ final class RemoveCommandTest extends TestCase
             ->method('delete')
             ->willReturn(1);
 
-        $coreResource = $this->getMockBuilder(Mage_Core_Model_Resource::class)
-            ->getMock();
+        $coreResource = $this->createMock(Mage_Core_Model_Resource::class);
 
         $coreResource->expects($this->once())
             ->method('getConnection')
@@ -106,8 +104,7 @@ final class RemoveCommandTest extends TestCase
             ->method('delete')
             ->willReturn(0);
 
-        $coreResource = $this->getMockBuilder(Mage_Core_Model_Resource::class)
-            ->getMock();
+        $coreResource = $this->createMock(Mage_Core_Model_Resource::class);
         ;
 
         $coreResource->expects($this->once())

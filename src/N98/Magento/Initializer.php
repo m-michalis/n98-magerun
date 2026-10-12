@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace N98\Magento;
 
 use N98\Util\AutoloadRestorer;
+use N98\Util\PharStreamWrapper;
+use Phar;
 use RuntimeException;
 
 /**
@@ -79,8 +81,14 @@ class Initializer
         // Create a new AutoloadRestorer to capture current auto-loaders
         $autoloadRestorer = new AutoloadRestorer();
 
+        // Load the helper now: once app/bootstrap.php has disabled phar:// it cannot be autoloaded from the phar
+        class_exists(PharStreamWrapper::class);
+
         $path = $this->magentoPath . '/' . self::PATH_APP_BOOTSTRAP_PHP;
         initialiser_require_once($path);
+
+        // OpenMage 20 unregisters phar:// in app/bootstrap.php, which breaks class loading from the magerun phar
+        PharStreamWrapper::restoreIfRunningFromPhar(Phar::running(false));
 
         $path = $this->magentoPath . '/' . self::PATH_APP_MAGE_PHP;
         initialiser_require_once($path);

@@ -121,7 +121,7 @@ final class ConfigTest extends TestCase
 
         /** @var Application|MockObject $application */
         $application = $this->createMock(Application::class);
-        $application->expects(self::exactly(2))->method('add');
+        $application->expects($this->exactly(2))->method('add');
 
         $config->registerCustomCommands($application);
     }

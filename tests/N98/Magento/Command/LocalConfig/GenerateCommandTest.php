@@ -133,12 +133,12 @@ final class GenerateCommandTest extends TestCase
 
         $this->assertFileExists($this->configFile);
         $fileContent = \file_get_contents($this->configFile);
-        $this->assertStringContainsString('<host><![CDATA[my_db_host]]></host>', $fileContent);
-        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', $fileContent);
-        $this->assertStringContainsString('<password><![CDATA[my_db_pass]]></password>', $fileContent);
-        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', $fileContent);
-        $this->assertStringContainsString('<session_save><![CDATA[my_session_save]]></session_save>', $fileContent);
-        $this->assertStringContainsString('<frontName><![CDATA[my_admin_frontname]]></frontName>', $fileContent);
+        $this->assertStringContainsString('<host><![CDATA[my_db_host]]></host>', (string) $fileContent);
+        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', (string) $fileContent);
+        $this->assertStringContainsString('<password><![CDATA[my_db_pass]]></password>', (string) $fileContent);
+        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', (string) $fileContent);
+        $this->assertStringContainsString('<session_save><![CDATA[my_session_save]]></session_save>', (string) $fileContent);
+        $this->assertStringContainsString('<frontName><![CDATA[my_admin_frontname]]></frontName>', (string) $fileContent);
         $this->assertMatchesRegularExpression('/<key><!\[CDATA\[[a-f0-9]{32}\]\]><\/key>/', $fileContent);
 
         $xml = \simplexml_load_file($this->configFile);
@@ -165,13 +165,13 @@ final class GenerateCommandTest extends TestCase
 
         $this->assertFileExists($this->configFile);
         $fileContent = \file_get_contents($this->configFile);
-        $this->assertStringContainsString('<host><![CDATA[my_db_host]]></host>', $fileContent);
-        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', $fileContent);
-        $this->assertStringContainsString('<password><![CDATA[my_db_pass]]></password>', $fileContent);
-        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', $fileContent);
-        $this->assertStringContainsString('<session_save><![CDATA[my_session_save]]></session_save>', $fileContent);
-        $this->assertStringContainsString('<frontName><![CDATA[my_admin_frontname]]></frontName>', $fileContent);
-        $this->assertStringContainsString('<key><![CDATA[key123456789]]></key>', $fileContent);
+        $this->assertStringContainsString('<host><![CDATA[my_db_host]]></host>', (string) $fileContent);
+        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', (string) $fileContent);
+        $this->assertStringContainsString('<password><![CDATA[my_db_pass]]></password>', (string) $fileContent);
+        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', (string) $fileContent);
+        $this->assertStringContainsString('<session_save><![CDATA[my_session_save]]></session_save>', (string) $fileContent);
+        $this->assertStringContainsString('<frontName><![CDATA[my_admin_frontname]]></frontName>', (string) $fileContent);
+        $this->assertStringContainsString('<key><![CDATA[key123456789]]></key>', (string) $fileContent);
 
         $xml = \simplexml_load_file($this->configFile);
         $this->assertIsNotBool($xml);
@@ -198,13 +198,13 @@ final class GenerateCommandTest extends TestCase
 
         $this->assertFileExists($this->configFile);
         $fileContent = \file_get_contents($this->configFile);
-        $this->assertStringContainsString('<host><![CDATA[my_db_host]]></host>', $fileContent);
-        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', $fileContent);
-        $this->assertStringContainsString('<password><![CDATA[my_db_pass]]></password>', $fileContent);
-        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', $fileContent);
-        $this->assertStringContainsString('<session_save><![CDATA[files]]></session_save>', $fileContent);
-        $this->assertStringContainsString('<frontName><![CDATA[admin]]></frontName>', $fileContent);
-        $this->assertStringContainsString('<key><![CDATA[key123456789]]></key>', $fileContent);
+        $this->assertStringContainsString('<host><![CDATA[my_db_host]]></host>', (string) $fileContent);
+        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', (string) $fileContent);
+        $this->assertStringContainsString('<password><![CDATA[my_db_pass]]></password>', (string) $fileContent);
+        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', (string) $fileContent);
+        $this->assertStringContainsString('<session_save><![CDATA[files]]></session_save>', (string) $fileContent);
+        $this->assertStringContainsString('<frontName><![CDATA[admin]]></frontName>', (string) $fileContent);
+        $this->assertStringContainsString('<key><![CDATA[key123456789]]></key>', (string) $fileContent);
 
         $xml = \simplexml_load_file($this->configFile);
         $this->assertIsNotBool($xml);
@@ -309,12 +309,12 @@ final class GenerateCommandTest extends TestCase
 
         $this->assertFileExists($this->configFile);
         $fileContent = \file_get_contents($this->configFile);
-        $this->assertStringContainsString('<host><![CDATA[some-db-host]]></host>', $fileContent);
-        $this->assertStringContainsString('<username><![CDATA[some-db-username]]></username>', $fileContent);
-        $this->assertStringContainsString('<password><![CDATA[some-db-password]]></password>', $fileContent);
-        $this->assertStringContainsString('<dbname><![CDATA[some-db-name]]></dbname>', $fileContent);
-        $this->assertStringContainsString('<session_save><![CDATA[some-session-save]]></session_save>', $fileContent);
-        $this->assertStringContainsString('<frontName><![CDATA[some-admin-front-name]]></frontName>', $fileContent);
+        $this->assertStringContainsString('<host><![CDATA[some-db-host]]></host>', (string) $fileContent);
+        $this->assertStringContainsString('<username><![CDATA[some-db-username]]></username>', (string) $fileContent);
+        $this->assertStringContainsString('<password><![CDATA[some-db-password]]></password>', (string) $fileContent);
+        $this->assertStringContainsString('<dbname><![CDATA[some-db-name]]></dbname>', (string) $fileContent);
+        $this->assertStringContainsString('<session_save><![CDATA[some-session-save]]></session_save>', (string) $fileContent);
+        $this->assertStringContainsString('<frontName><![CDATA[some-admin-front-name]]></frontName>', (string) $fileContent);
 
         $xml = \simplexml_load_file($this->configFile);
         $this->assertIsNotBool($xml);
@@ -354,13 +354,13 @@ final class GenerateCommandTest extends TestCase
 
         $this->assertFileExists($this->configFile);
         $fileContent = \file_get_contents($this->configFile);
-        $this->assertStringContainsString('<host><![CDATA[my_db_host]]></host>', $fileContent);
-        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', $fileContent);
-        $this->assertStringContainsString('<password></password>', $fileContent);
-        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', $fileContent);
-        $this->assertStringContainsString('<session_save><![CDATA[my_session_save]]></session_save>', $fileContent);
-        $this->assertStringContainsString('<frontName><![CDATA[my_admin_frontname]]></frontName>', $fileContent);
-        $this->assertStringContainsString('<key><![CDATA[key123456789]]></key>', $fileContent);
+        $this->assertStringContainsString('<host><![CDATA[my_db_host]]></host>', (string) $fileContent);
+        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', (string) $fileContent);
+        $this->assertStringContainsString('<password></password>', (string) $fileContent);
+        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', (string) $fileContent);
+        $this->assertStringContainsString('<session_save><![CDATA[my_session_save]]></session_save>', (string) $fileContent);
+        $this->assertStringContainsString('<frontName><![CDATA[my_admin_frontname]]></frontName>', (string) $fileContent);
+        $this->assertStringContainsString('<key><![CDATA[key123456789]]></key>', (string) $fileContent);
 
         $xml = \simplexml_load_file($this->configFile);
         $this->assertIsNotBool($xml);
@@ -402,13 +402,13 @@ final class GenerateCommandTest extends TestCase
 
         $this->assertFileExists($this->configFile);
         $fileContent = \file_get_contents($this->configFile);
-        $this->assertStringContainsString('<host><![CDATA[CDATAdatabasehost]]></host>', $fileContent);
-        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', $fileContent);
-        $this->assertStringContainsString('<password><![CDATA[my_db_pass]]></password>', $fileContent);
-        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', $fileContent);
-        $this->assertStringContainsString('<session_save><![CDATA[my_session_save]]></session_save>', $fileContent);
-        $this->assertStringContainsString('<frontName><![CDATA[my_admin_frontname]]></frontName>', $fileContent);
-        $this->assertStringContainsString('<key><![CDATA[key123456789]]></key>', $fileContent);
+        $this->assertStringContainsString('<host><![CDATA[CDATAdatabasehost]]></host>', (string) $fileContent);
+        $this->assertStringContainsString('<username><![CDATA[my_db_user]]></username>', (string) $fileContent);
+        $this->assertStringContainsString('<password><![CDATA[my_db_pass]]></password>', (string) $fileContent);
+        $this->assertStringContainsString('<dbname><![CDATA[my_db_name]]></dbname>', (string) $fileContent);
+        $this->assertStringContainsString('<session_save><![CDATA[my_session_save]]></session_save>', (string) $fileContent);
+        $this->assertStringContainsString('<frontName><![CDATA[my_admin_frontname]]></frontName>', (string) $fileContent);
+        $this->assertStringContainsString('<key><![CDATA[key123456789]]></key>', (string) $fileContent);
         $xml = \simplexml_load_file($this->configFile);
         $this->assertIsNotBool($xml);
     }

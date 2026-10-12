@@ -17,9 +17,6 @@ class FooCommand extends AbstractMagentoCommand
             ->setDescription('Test command registered in a module');
     }
 
-    /**
-     * @return int|void
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->detectMagento($output);

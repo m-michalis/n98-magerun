@@ -205,7 +205,7 @@ final class DeleteCommandTest extends TestCase
             ->willReturn($this->customerModel);
 
         $this->customerModel
-            ->expects(self::exactly(2))
+            ->expects($this->exactly(2))
             ->method('getId')
             ->willReturn(null);
 
@@ -364,7 +364,7 @@ final class DeleteCommandTest extends TestCase
             ->willReturnMap([['firstname', false, $this->customerCollection], ['lastname', false, $this->customerCollection], ['email', false, $this->customerCollection]]);
 
         $this->questionHelper
-            ->expects(self::exactly(2))
+            ->expects($this->exactly(2))
             ->method('ask');
 
         $this->questionHelper
@@ -497,7 +497,7 @@ final class DeleteCommandTest extends TestCase
     public function testPromptDeleteAllAndDeleteRangeAndAbort()
     {
         $this->questionHelper
-            ->expects(self::exactly(3))
+            ->expects($this->exactly(3))
             ->method('askConfirmation')->willReturnOnConsecutiveCalls(true, false, false);
 
         $application = $this->getApplication();
@@ -518,12 +518,12 @@ final class DeleteCommandTest extends TestCase
     public function testPromptAllCanDeleteAll()
     {
         $this->questionHelper
-            ->expects(self::exactly(2))
+            ->expects($this->exactly(2))
             ->method('askConfirmation')
             ->willReturn(true);
 
         $this->customerCollection
-            ->expects(self::exactly(3))
+            ->expects($this->exactly(3))
             ->method('addAttributeToSelect')
             ->willReturnMap([['firstname', false, $this->customerCollection], ['lastname', false, $this->customerCollection], ['email', false, $this->customerCollection]]);
 
@@ -550,7 +550,7 @@ final class DeleteCommandTest extends TestCase
     public function testPromptRangeCanDeleteRange()
     {
         $this->questionHelper
-            ->expects(self::exactly(3))
+            ->expects($this->exactly(3))
             ->method('askConfirmation')->willReturnOnConsecutiveCalls(true, false, true);
 
         $this->customerCollection
@@ -559,7 +559,7 @@ final class DeleteCommandTest extends TestCase
             ->willReturnMap([['firstname', false, $this->customerCollection], ['lastname', false, $this->customerCollection], ['email', false, $this->customerCollection]]);
 
         $this->questionHelper
-            ->expects(self::exactly(2))
+            ->expects($this->exactly(2))
             ->method('askAndValidate');
 
         $this->questionHelper
@@ -603,7 +603,7 @@ final class DeleteCommandTest extends TestCase
             ->getMock();
 
         $command
-            ->expects(self::exactly(2))
+            ->expects($this->exactly(2))
             ->method('deleteCustomer')->willReturnOnConsecutiveCalls(true, new Exception('Failed to delete'));
 
         $reflectionObject = new ReflectionObject($command);

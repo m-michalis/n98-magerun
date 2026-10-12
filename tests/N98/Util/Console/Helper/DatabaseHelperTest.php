@@ -135,6 +135,7 @@ final class DatabaseHelperTest extends TestCase
         $reflectionObject = new ReflectionObject($dbSettings);
         $reflectionProperty = $reflectionObject->getProperty('config');
         $reflectionProperty->setAccessible(true);
+        $this->assertInstanceOf(\N98\Magento\DbSettings::class, $dbSettings);
 
         $config = $reflectionProperty->getValue($dbSettings);
         $previous = $config['prefix'];
